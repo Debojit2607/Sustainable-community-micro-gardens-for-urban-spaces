@@ -1,0 +1,56 @@
+import React, { useEffect, useState } from "react";
+
+const MicroGardens = () => {
+  const [gardens, setGardens] = useState([]);
+  const [gardenName, setGardenName] = useState("");
+  const [location, setLocation] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/gardens")
+      .then((res) => res.json())
+      .then((data) => setGardens(data));
+  }, []);
+
+  const addGarden = () => {
+    fetch("http://localhost:5000/api/gardens", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: gardenName, location })
+    })
+    .then((res) => res.json())
+    .then((data) => setGardens(data));
+
+    setGardenName("");
+    setLocation("");
+  };
+
+  return (
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Community Micro-Gardens</h1>
+      <input
+        type="text"
+        value={gardenName}
+        onChange={(e) => setGardenName(e.target.value)}
+        className="border p-2 rounded w-full mb-2"
+        placeholder="Garden Name"
+      />
+      <input
+        type="text"
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        className="border p-2 rounded w-full mb-2"
+        placeholder="Location (e.g., Rooftop, Balcony)"
+      />
+      <button onClick={addGarden} className="bg-green-500 text-white px-4 py-2 rounded">Add Garden</button>
+      <ul className="mt-4">
+        {gardens.map((garden, index) => (
+          <li key={index} className="p-2 border rounded mt-2">
+            <strong>{garden.name}</strong> - {garden.location}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default MicroGardens;
